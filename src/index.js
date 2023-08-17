@@ -34,6 +34,8 @@ import messagesRouter from './routes/messages.router.js'
 import fakerRouter from './faker/user.routes.js'
 import errorHandler from './middleware/errors.middleware.js'
 import { addLogger } from './utils/logger.js'
+import swaggerJsdoc from 'swagger-jsdoc'
+import swaggerUiExpress from 'swagger-ui-express'
 
 
 
@@ -50,6 +52,24 @@ const storage = multer.diskStorage({
     }
 }) 
 
+
+const swaggerOptions = {
+    definition : {
+        openapi : '3.0.1',
+        info : {
+            title : 'Documentación del proyecto',
+            description : 'información de productos y carritos',
+            version : '1.0.0',
+            contact: {
+                name : 'Alejandro Bandi',
+               // url : ''
+            }
+        }
+    },
+    apis : [`${process.cwd()}/src/docs/**/*.yaml`],
+}
+
+const spec = swaggerJsdoc(swaggerOptions)
 
 //mongoose.connect(config.URL_MONGODB_ATLAS)
 //mongoose.connect("mongodb+srv://bandialejandro:Bocha101@cluster0.b47bksn.mongodb.net/?retryWrites=true&w=majority")
@@ -203,6 +223,7 @@ app.use('/api/jwt', jwtRouter)
 app.use('/mocking', fakerRouter)
 app.use(errorHandler)
 app.use(addLogger)
+app.use('/apidoc', swaggerUiExpress.serve, swaggerUiExpress.setup(spec))
 
 
 
